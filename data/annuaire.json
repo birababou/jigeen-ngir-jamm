@@ -1,0 +1,19 @@
+{
+  "_avertissement": "DONNÉES D'EXEMPLE pour la démo. Structures et numéros fictifs. À remplacer par l'annuaire validé avec les districts sanitaires partenaires.",
+  "districts": [
+    { "id": "mbour", "nom": "Mbour" },
+    { "id": "thies", "nom": "Thiès" },
+    { "id": "kaolack", "nom": "Kaolack" }
+  ],
+  "structures": [
+    { "id": "s1", "district": "mbour", "type": "poste_sante", "nom": "Poste de santé (exemple) — Mbour Centre", "telephone": "+221 00 000 00 01", "horaires": "Lun-Sam 8h-17h", "services": ["sage_femme", "planification_familiale", "cpn"] },
+    { "id": "s2", "district": "mbour", "type": "relais", "nom": "Relais communautaire (exemple) — Mbour", "telephone": "+221 00 000 00 02", "horaires": "Tous les jours 9h-19h", "services": ["ecoute", "orientation"] },
+    { "id": "s3", "district": "mbour", "type": "violences", "nom": "Point d'écoute et de prise en charge (exemple) — Mbour", "telephone": "+221 00 000 00 03", "horaires": "24h/24", "services": ["vbg", "psychosocial", "juridique"] },
+    { "id": "s4", "district": "thies", "type": "poste_sante", "nom": "Centre de santé (exemple) — Thiès", "telephone": "+221 00 000 00 04", "horaires": "Lun-Ven 8h-18h", "services": ["sage_femme", "planification_familiale", "cpn"] },
+    { "id": "s5", "district": "thies", "type": "relais", "nom": "Relais communautaire (exemple) — Thiès", "telephone": "+221 00 000 00 05", "horaires": "Lun-Sam 9h-18h", "services": ["ecoute", "orientation"] },
+    { "id": "s6", "district": "thies", "type": "violences", "nom": "Point d'écoute (exemple) — Thiès", "telephone": "+221 00 000 00 06", "horaires": "24h/24", "services": ["vbg", "psychosocial"] },
+    { "id": "s7", "district": "kaolack", "type": "poste_sante", "nom": "Poste de santé (exemple) — Kaolack", "telephone": "+221 00 000 00 07", "horaires": "Lun-Sam 8h-17h", "services": ["sage_femme", "cpn"] },
+    { "id": "s8", "district": "kaolack", "type": "relais", "nom": "Relais communautaire (exemple) — Kaolack", "telephone": "+221 00 000 00 08", "horaires": "Lun-Sam 9h-18h", "services": ["ecoute", "orientation"] },
+    { "id": "s9", "district": "kaolack", "type": "violences", "nom": "Point d'écoute (exemple) — Kaolack", "telephone": "+221 00 000 00 09", "horaires": "24h/24", "services": ["vbg", "psychosocial"] }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_avertissement": "Liste minimale pour la démo. À compléter et valider avec la responsable protection.",
+  "detresse": {
+    "fr": ["suicide", "me tuer", "en finir", "mourir", "plus envie de vivre", "me faire du mal"],
+    "wo": ["dee", "rey sama bopp", "bëgg dee", "sonn naa ci dund"]
+  },
+  "violence": {
+    "fr": ["il me frappe", "me frappe", "battue", "viol", "violee", "violée", "forcee", "forcée", "menace de mort", "danger"],
+    "wo": ["dóor na ma", "dafa may dóor", "forcé na ma", "musiba"]
+  }
+}

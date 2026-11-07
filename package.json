@@ -1,0 +1,20 @@
+{
+  "name": "jigeen-ngir-jamm",
+  "version": "0.1.0",
+  "description": "Assistant conversationnel open source pour la santé, le bien-être et la sécurité des femmes et des filles (chatbot web + WhatsApp).",
+  "license": "Apache-2.0",
+  "author": "Talismeas Technologies <https://talismeas.tech>",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

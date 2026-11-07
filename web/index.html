@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e5a47" />
+  <meta name="apple-mobile-web-app-title" content="Jàmm" />
+  <meta name="referrer" content="no-referrer" />
+  <!-- Titre d'onglet court et discret (« paix » en wolof). L'aperçu de partage, lui, présente le service. -->
+  <title>Jàmm</title>
+  <meta name="description" content="Assistant gratuit et confidentiel pour la santé, le bien-être et la sécurité des femmes et des filles, en wolof, pulaar et français." />
+
+  <!-- OpenGraph (aperçu WhatsApp, Facebook, LinkedIn…) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Jigéen Ngir Jàmm" />
+  <meta property="og:title" content="Jigéen Ngir Jàmm — santé, bien-être et sécurité des femmes" />
+  <meta property="og:description" content="Gratuit, confidentiel et open source. Informations fiables, orientation vers les structures de santé et alerte discrète. En wolof, pulaar et français." />
+  <meta property="og:url" content="https://jammjigeen.org/" />
+  <meta property="og:image" content="https://jammjigeen.org/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Jigéen Ngir Jàmm — assistant santé, bien-être et sécurité des femmes et des filles" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jigéen Ngir Jàmm" />
+  <meta name="twitter:description" content="Santé, bien-être et sécurité des femmes et des filles — gratuit et confidentiel." />
+  <meta name="twitter:image" content="https://jammjigeen.org/og-image.png" />
+
+  <!-- Icônes -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Écran d'accueil -->
+  <section id="splash" class="splash" aria-busy="true" aria-label="Chargement">
+    <div class="splash-inner">
+      <img class="splash-logo" src="/favicon.svg" alt="" width="84" height="84" />
+      <h1>Jigéen Ngir Jàmm</h1>
+      <p class="tagline">La femme pour la paix</p>
+      <div class="loader-bar" role="progressbar" aria-label="Chargement"><span></span></div>
+      <p class="meta">Gratuit · Confidentiel · Open source<br />Wolof · Pulaar · Français</p>
+    </div>
+  </section>
+
+  <!-- Conversation -->
+  <main id="chat" class="chat" hidden>
+    <header class="bar">
+      <span class="brand">Jigéen Ngir Jàmm</span>
+      <span class="actions">
+        <button id="btn-menu" class="chip" type="button">Menu</button>
+        <button id="btn-exit" class="chip exit" type="button" title="Sortie rapide">✕</button>
+      </span>
+    </header>
+    <div id="log" class="log" aria-live="polite"></div>
+    <form id="composer" class="composer" autocomplete="off">
+      <input id="input" type="text" placeholder="Écrivez votre question…" maxlength="1000" />
+      <button id="btn-mic" class="mic" type="button" aria-label="Parler">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z"/></svg>
+      </button>
+      <button class="send" type="submit" aria-label="Envoyer">➤</button>
+    </form>
+  </main>
+
+  <!-- Écran neutre (mot de code ou sortie rapide) -->
+  <section id="neutral" class="neutral" hidden>
+    <h1>Recettes faciles</h1>
+    <article>
+      <h2>Thiéboudienne</h2>
+      <p>Pour 6 personnes : 1 kg de riz brisé, 1,5 kg de poisson, 2 carottes, 1 chou, 1 aubergine, 1 manioc, 2 oignons, 3 c. à s. de concentré de tomate, persil, ail, piment.</p>
+      <p>Farcir le poisson avec le persil pilé, l'ail et le piment. Faire revenir les oignons, ajouter la tomate puis l'eau. Cuire les légumes et le poisson, les retirer, puis cuire le riz dans le bouillon.</p>
+    </article>
+    <article>
+      <h2>Bissap</h2>
+      <p>Faire infuser 200 g de fleurs d'hibiscus dans 2 litres d'eau, filtrer, sucrer et parfumer à la menthe. Servir frais.</p>
+    </article>
+  </section>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

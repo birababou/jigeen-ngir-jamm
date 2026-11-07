@@ -1,0 +1,126 @@
+{
+  "_avertissement": "BROUILLONS pour la démo. Contenus santé à faire VALIDER par une sage-femme ou un médecin, et traductions wolof à faire RELIRE par un locuteur, avant toute utilisation réelle. Ne jamais publier une fiche dont le statut n'est pas 'valide'.",
+  "fiches": [
+    {
+      "id": "retard-regles",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["retard", "regles", "règles", "pas eu mes regles", "enceinte", "test de grossesse", "cycle"],
+        "wo": ["ayu bés", "ayubés", "ëmb", "emb", "test"]
+      },
+      "titre": { "fr": "Retard de règles", "wo": "Ayu-bés bu yeexa ñëw" },
+      "texte": {
+        "fr": "Un retard de règles peut avoir plusieurs causes : grossesse, stress, fatigue, changement de poids, maladie ou début d'une contraception. Je ne pose pas de diagnostic. Si vous avez eu des rapports, un test de grossesse peut être fait au poste de santé ou en pharmacie. Une sage-femme peut vous répondre en toute confidentialité.",
+        "wo": "Ayu-bés bu yeexa ñëw mën na am ay sabab yu bari : ëmb, xalaat yu bari, coono, soppiku ci sa diisaay, feebar, walla nga tàmbali planification familiale. Duma def diagnostic. Su fekkee nga def séy, mën nga def test ëmb ca poste de santé bi walla ca farmasi ba. Sage-femme mën na la tontu, te kenn du ko yég."
+      }
+    },
+    {
+      "id": "contraception",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["contraception", "planning", "planification", "pilule", "implant", "injection", "preservatif", "préservatif", "eviter grossesse", "éviter une grossesse"],
+        "wo": ["planification", "pilule", "implant", "piqûre", "fagaru ci ëmb"]
+      },
+      "titre": { "fr": "Contraception (planification familiale)", "wo": "Planification familiale" },
+      "texte": {
+        "fr": "Il existe plusieurs méthodes : pilule, injection, implant, stérilet, préservatif, entre autres. Le choix dépend de votre santé et de vos besoins. Au poste de santé, la sage-femme vous conseille en toute confidentialité et peut vous proposer une méthode adaptée. Le préservatif est la seule méthode qui protège aussi des infections sexuellement transmissibles.",
+        "wo": "Am na ay pexe yu bari : pilule, piqûre, implant, stérilet, préservatif ak yeneen. Li nga tànn dafa aju ci sa wér-gu-yaram ak sa soxla. Ca poste de santé bi, sage-femme bi dina la digal, te kenn du ko yég. Préservatif rekk moo lay aar itam ci jàngoro yi ñuy wàll ci séy."
+      }
+    },
+    {
+      "id": "cpn",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["grossesse", "enceinte", "consultation prenatale", "cpn", "suivi grossesse", "bebe", "bébé"],
+        "wo": ["ëmb", "emb", "cpn", "liir", "doom"]
+      },
+      "titre": { "fr": "Suivi de grossesse (CPN)", "wo": "Topptoo ëmb (CPN)" },
+      "texte": {
+        "fr": "Pendant la grossesse, les consultations prénatales permettent de vérifier votre santé et celle du bébé. Il est conseillé de faire la première consultation le plus tôt possible, idéalement avant 3 mois de grossesse, puis de suivre le calendrier proposé par la sage-femme. Je peux vous orienter vers la structure la plus proche et vous envoyer un rappel.",
+        "wo": "Bu nga ëmbee, CPN yi dañuy wone ni sa wér-gu-yaram ak bu doom ji mel. Baax na nga def bu njëkk bi gannaaw bi nga xamee ne ëmb nga, bala 3 weer yi di jeex, te nga topp li sage-femme bi la wax. Mën naa la won fan la poste de santé bi gën a jege te yónne la ab fàttali."
+      }
+    },
+    {
+      "id": "signes-danger-grossesse",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": true,
+      "urgence": true,
+      "mots_cles": {
+        "fr": ["saignement", "saigne", "perte de sang", "convulsion", "fievre", "fièvre", "mal de tete", "mal de tête", "perte des eaux", "bebe ne bouge plus", "bébé ne bouge plus"],
+        "wo": ["deret", "tàng", "bopp", "doom ji du yengu"]
+      },
+      "titre": { "fr": "Signes de danger pendant la grossesse", "wo": "Mandarga yu bon bu nga ëmbee" },
+      "texte": {
+        "fr": "Pendant la grossesse, allez IMMÉDIATEMENT au poste ou au centre de santé si vous avez : des saignements, de fortes douleurs au ventre, de la fièvre, un fort mal de tête ou une vue trouble, des convulsions, une perte de liquide, ou si le bébé ne bouge plus. N'attendez pas.",
+        "wo": "Bu nga ëmbee, demal LÉEGI ca poste de santé bi su fekkee am nga : deret buy rot, biir buy metti lool, tàng, bopp buy metti lool walla gis gu lëndëm, rëcc-rëcc (convulsions), ndox muy rot, walla doom ji du yengu. Bul xaar."
+      }
+    },
+    {
+      "id": "hygiene-menstruelle",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": false,
+      "mots_cles": {
+        "fr": ["serviette", "hygiene", "hygiène", "regles douloureuses", "règles douloureuses", "douleur regles", "menstruation"],
+        "wo": ["ayu bés", "serviette", "metti"]
+      },
+      "titre": { "fr": "Règles et hygiène menstruelle", "wo": "Ayu-bés ak set" },
+      "texte": {
+        "fr": "Pendant les règles, changez de protection (serviette ou tissu propre) plusieurs fois par jour et lavez-vous à l'eau propre. Des douleurs légères sont fréquentes ; la chaleur sur le ventre et le repos peuvent aider. Si les douleurs sont très fortes, si les règles durent plus de 7 jours ou sont très abondantes, parlez-en à une sage-femme.",
+        "wo": "Ci ayu-bés, soppil sa serviette walla sa sér bu set ay yoon ci bés bi, te sangu ak ndox mu set. Metit gu néew dafa bari ; tàngal sa biir te noppalu, dina la dimbali. Su metit gi ëppee, walla ayu-bés bi wees 7 fan, walla bari lool, waxal ko ak sage-femme."
+      }
+    },
+    {
+      "id": "ist",
+      "theme": "sante",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["ist", "mst", "pertes", "demangeaisons", "démangeaisons", "brulure", "brûlure", "infection"],
+        "wo": ["jàngoro", "xoxos", "lakk"]
+      },
+      "titre": { "fr": "Pertes, démangeaisons, infections", "wo": "Jàngoro yu ñuy wàll ci séy" },
+      "texte": {
+        "fr": "Des pertes inhabituelles (odeur, couleur), des démangeaisons, des brûlures en urinant ou des douleurs peuvent signaler une infection. Seul un agent de santé peut le confirmer et proposer un traitement. Ne prenez pas de médicament sans avis. La consultation est confidentielle.",
+        "wo": "Su fekkee dangay gis lu wuute ci say ndox (xet walla melo), walla danga xoxos, walla dangay lakk bu ngay saw, mën na nekk jàngoro. Fajkat rekk moo ko mën a wóoral te jox la garab. Bul naan garab te kenn digaloo la. Kenn du ko yég."
+      }
+    },
+    {
+      "id": "stress-tristesse",
+      "theme": "bienetre",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["triste", "tristesse", "stress", "angoisse", "peur", "dormir", "fatiguee", "fatiguée", "seule", "pleure"],
+        "wo": ["naqar", "tiit", "nelaw", "jooy", "kenn"]
+      },
+      "titre": { "fr": "Tristesse, stress, angoisse", "wo": "Naqar ak tiit" },
+      "texte": {
+        "fr": "Ce que vous ressentez compte. Essayez cet exercice : inspirez lentement par le nez en comptant jusqu'à 4, gardez l'air 2 secondes, puis soufflez par la bouche en comptant jusqu'à 6. Répétez 5 fois. Parler à une personne de confiance aide aussi. Si ce sentiment dure ou devient trop lourd, une personne formée peut vous écouter.",
+        "wo": "Li ngay yëg am na solo. Jéemal lii : noyyil ndànk ci sa bakkan ba 4, téyeel ngelaw li 2 saa, nga génne ko ci sa gémmiñ ba 6. Defal ko 5 yoon. Waxtaan ak ku la wóor mën na la dimbali itam. Su fekkee mu yàgg walla mu diis lool, am na nit ku ñu tàggat ku la mën a déglu."
+      }
+    },
+    {
+      "id": "violences-droits",
+      "theme": "securite",
+      "statut": "brouillon",
+      "orienter": true,
+      "mots_cles": {
+        "fr": ["violence", "frappe", "battue", "force", "forcée", "viol", "menace", "harcelement", "harcèlement", "mariage force", "mariage forcé"],
+        "wo": ["dóor", "fitna", "def ma lu bon", "jabar bu ñu forcé"]
+      },
+      "titre": { "fr": "Violences : vous avez des droits", "wo": "Fitna : am nga ay sañ-sañ" },
+      "texte": {
+        "fr": "Personne n'a le droit de vous frapper, de vous forcer ou de vous menacer. Ce n'est pas de votre faute. Vous pouvez être aidée sur le plan médical, psychologique et juridique. Si vous êtes en danger maintenant, éloignez-vous si vous le pouvez et appelez la police (17). Je peux envoyer une alerte discrète à une personne formée qui vous rappellera.",
+        "wo": "Kenn amul sañ-sañ dóor la, forcé la walla tiital la. Du sa tooñ. Mën nañu la dimbali ci wér-gu-yaram, ci xel ak ci yoon. Su fekkee ci kaw jamono jii yaa ngi ci musiba, soreel bu la neexee te woo police (17). Mën naa yónne ab alerte bu nëbbu ci nit ku ñu tàggat ku lay woo."
+      }
+    }
+  ]
+}
