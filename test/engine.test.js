@@ -144,3 +144,19 @@ test('purge des sessions inactives (sauf rappel en attente)', async () => {
   assert.equal(store.sessions.purgeInactive(60), 1);
   assert.equal(store.sessions.get(h), undefined);
 });
+
+test('journaux du mode démo : aucun numéro en clair', async () => {
+  assert.equal(store.maskPhones('Rappeler : 221770000000 ou +221770000000'), 'Rappeler : [numéro masqué] ou [numéro masqué]');
+  assert.equal(store.maskPhones('📞 33 951 00 00'), '📞 33 951 00 00');
+  const logs = [];
+  const orig = console.log;
+  console.log = (...a) => logs.push(a.join(' '));
+  try {
+    await wa.sendReplies('221770000000', [{ text: 'Nouvelle demande\nRappeler : 221770000000' }]);
+  } finally {
+    console.log = orig;
+  }
+  assert.equal(logs.length, 1);
+  assert.doesNotMatch(logs[0], /221770000000/);
+  assert.match(logs[0], new RegExp(store.hashUser('whatsapp', '221770000000')));
+});

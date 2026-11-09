@@ -36,6 +36,10 @@ export function hashUser(channel, id) {
   return crypto.createHmac('sha256', config.hashSecret).update(`${channel}:${id}`).digest('hex').slice(0, 32);
 }
 
+// Journaux : masque les numéros de téléphone (suites de 9 à 15 chiffres, format WhatsApp).
+// Les numéros des structures, écrits avec des espaces (33 xxx xx xx), restent lisibles.
+export const maskPhones = (s) => String(s).replace(/\+?\d{9,15}/g, '[numéro masqué]');
+
 export function encrypt(text) {
   const iv = crypto.randomBytes(12);
   const c = crypto.createCipheriv('aes-256-gcm', key, iv);

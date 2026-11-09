@@ -2,6 +2,7 @@
 // Sans identifiants configurés, les messages sont affichés dans la console (mode démo hors ligne).
 import crypto from 'node:crypto';
 import { config } from '../config.js';
+import { hashUser, maskPhones } from '../store.js';
 
 const wa = config.whatsapp;
 export const whatsappEnabled = () => Boolean(wa.token && wa.phoneNumberId);
@@ -65,7 +66,7 @@ export function toWhatsApp(to, reply) {
 
 async function post(payload) {
   if (!whatsappEnabled()) {
-    console.log('[whatsapp:démo]', JSON.stringify(payload));
+    console.log('[whatsapp:démo]', maskPhones(JSON.stringify({ ...payload, ...(payload.to && { to: hashUser('whatsapp', payload.to) }) })));
     return;
   }
   const res = await fetch(`https://graph.facebook.com/${wa.graphVersion}/${wa.phoneNumberId}/messages`, {
@@ -73,7 +74,7 @@ async function post(payload) {
     headers: { Authorization: `Bearer ${wa.token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  if (!res.ok) console.error('[whatsapp] erreur', res.status, await res.text());
+  if (!res.ok) console.error('[whatsapp] erreur', res.status, maskPhones(await res.text()));
 }
 
 export async function sendReplies(to, replies) {

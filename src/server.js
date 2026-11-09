@@ -3,7 +3,7 @@ import express from 'express';
 import path from 'node:path';
 import { config } from './config.js';
 import { handle, setRelayNotifier, followupMessage } from './engine/engine.js';
-import { alerts, followups, sessions, stats, decrypt, hashUser } from './store.js';
+import { alerts, followups, sessions, stats, decrypt, hashUser, maskPhones } from './store.js';
 import * as wa from './channels/whatsapp.js';
 
 const app = express();
@@ -31,7 +31,7 @@ app.use(express.json({ limit: '100kb', verify: (req, _res, buf) => (req.rawBody 
 setRelayNotifier(async (alert, contact) => {
   const msg = `Nouvelle demande #${alert.id} (${alert.type}) — zone : ${alert.district} — langue : ${alert.lang}\nRappeler : ${contact}\nRépondre en restant neutre (ne pas citer le service si quelqu'un d'autre décroche).`;
   if (config.relay.whatsapp) await wa.sendReplies(config.relay.whatsapp, [{ text: msg }]);
-  else console.log('[relais:démo]', msg);
+  else console.log('[relais:démo]', maskPhones(msg));
 });
 
 // ---------- Chatbot web ----------
