@@ -89,7 +89,11 @@ app.post('/webhook/whatsapp', async (req, res) => {
         input = { ...m, voice: false, text: heard, spoken: true };
       }
       const result = await handle(input);
-      await wa.sendReplies(m.userId, result.replies);
+      // Elle a parlé : chaque message part d'abord en vocal (texte + choix numérotés), puis en écrit.
+      for (const r of result.replies) {
+        if (input.spoken && !result.ui?.neutral) await wa.sendVoice(m.userId, r.speech);
+        await wa.sendReplies(m.userId, [r]);
+      }
     } catch (e) {
       console.error('[whatsapp] traitement', e);
     }

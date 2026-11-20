@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { config } from '../config.js';
 import { hashUser, maskPhones } from '../store.js';
 import { speechEnabled, transcribe } from '../speech.js';
+import { ttsEnabled, speechAudio } from '../tts.js';
 
 const wa = config.whatsapp;
 export const whatsappEnabled = () => Boolean(wa.token && wa.phoneNumberId);
@@ -108,6 +109,40 @@ export async function voiceToText(mediaId) {
   } catch (e) {
     console.error('[whatsapp] vocal', e.message);
     return '';
+  }
+}
+
+// Réponse en vocal : l'audio est déposé une fois chez Meta (identifiant valable 30 jours, gardé en mémoire),
+// puis envoyé comme message audio. Sans voix configurée, rien n'est envoyé : le texte suffit.
+export const voiceRepliesEnabled = () => whatsappEnabled() && ttsEnabled();
+const mediaIds = new Map(); // empreinte du texte → { id, at }
+const MEDIA_TTL_MS = 25 * 86400000;
+
+async function uploadAudio({ key, data }) {
+  const known = mediaIds.get(key);
+  if (known && Date.now() - known.at < MEDIA_TTL_MS) return known.id;
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append('type', 'audio/mpeg');
+  form.append('file', new Blob([data], { type: 'audio/mpeg' }), `${key}.mp3`);
+  const res = await fetch(`https://graph.facebook.com/${wa.graphVersion}/${wa.phoneNumberId}/media`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${wa.token}` },
+    body: form
+  });
+  if (!res.ok) throw new Error(`dépôt audio ${res.status} ${maskPhones(await res.text())}`);
+  const { id } = await res.json();
+  mediaIds.set(key, { id, at: Date.now() });
+  return id;
+}
+
+export async function sendVoice(to, text) {
+  if (!voiceRepliesEnabled() || !text) return;
+  try {
+    const id = await uploadAudio(await speechAudio(text));
+    await post({ messaging_product: 'whatsapp', to, type: 'audio', audio: { id } });
+  } catch (e) {
+    console.error('[whatsapp] réponse vocale', e.message);
   }
 }
 

@@ -7,10 +7,12 @@ import fs from 'node:fs';
 process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'jnj-'));
 process.env.CODE_WORD = 'mango';
 process.env.STT_API_KEY = 'cle-de-test';
+process.env.ELEVENLABS_API_KEY = 'cle-voix-test';
 const { handle, setRelayNotifier, _resetPreConsent } = await import('../src/engine/engine.js');
 const store = await import('../src/store.js');
 const wa = await import('../src/channels/whatsapp.js');
 const speech = await import('../src/speech.js');
+const tts = await import('../src/tts.js');
 
 let relayed = [];
 setRelayNotifier(async (a, contact) => relayed.push({ a, contact }));
@@ -249,4 +251,31 @@ test('vocal enregistré : le son part au service de transcription en français, 
 test('WhatsApp : sans identifiants Meta, un vocal n’est pas téléchargé', async () => {
   assert.equal(wa.voiceEnabled(), false);
   assert.equal(await wa.voiceToText('media-123'), '');
+});
+
+test('réponse vocale : audio fabriqué une seule fois, en français, avec le texte du bot seulement', async () => {
+  const orig = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, opts) => {
+    calls.push({ url, body: JSON.parse(opts.body), key: opts.headers['xi-api-key'] });
+    return new Response(Buffer.from('mp3'), { status: 200 });
+  };
+  try {
+    const text = 'De quoi avez-vous besoin ? Me faire soigner : dites un.';
+    const a = await tts.speechAudio(text);
+    const b = await tts.speechAudio(text);
+    assert.equal(a.key, b.key);
+    assert.equal(b.data.toString(), 'mp3');
+  } finally {
+    globalThis.fetch = orig;
+  }
+  assert.equal(calls.length, 1); // le 2e passage vient du cache
+  assert.equal(calls[0].key, 'cle-voix-test');
+  assert.equal(calls[0].body.language_code, 'fr');
+  assert.match(calls[0].url, /text-to-speech\/6ttbYOa7qzV4SVBtOEQS/);
+});
+
+test('WhatsApp : sans identifiants Meta, aucune réponse vocale n’est envoyée', async () => {
+  assert.equal(wa.voiceRepliesEnabled(), false);
+  await wa.sendVoice('221770000000', 'Bonjour'); // ne fait rien, ne lève pas d'erreur
 });

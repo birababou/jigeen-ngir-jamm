@@ -37,6 +37,11 @@ export const config = {
     apiKey: env.STT_API_KEY || '',
     model: env.STT_MODEL || 'whisper-1'
   },
+  tts: {
+    apiKey: env.ELEVENLABS_API_KEY || '',
+    voiceId: env.ELEVENLABS_VOICE_ID || '6ttbYOa7qzV4SVBtOEQS', // « Elia », voix féminine française
+    model: env.ELEVENLABS_MODEL || 'eleven_multilingual_v2'
+  },
   llm: {
     apiKey: env.ANTHROPIC_API_KEY || '',
     model: env.LLM_MODEL || 'claude-haiku-5-5'
