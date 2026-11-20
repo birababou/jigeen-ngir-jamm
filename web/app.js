@@ -184,6 +184,7 @@ async function send({ text = '', action = null, label = null, silent = false, sp
 // Sortie rapide : écran neutre + effacement de l'historique local.
 function neutral() {
   stopAll();
+  toggleWhatsApp(false);
   stopRecording(false); // sortie rapide pendant un enregistrement : rien n'est envoyé
   if (listening) rec.stop();
   log.innerHTML = '';
@@ -194,7 +195,14 @@ function neutral() {
   history.replaceState(null, '', '/');
 }
 
+// Panneau « Continuer sur WhatsApp » (QR code + lien direct).
+function toggleWhatsApp(open = $('wa').hidden) {
+  $('wa').hidden = !open;
+  $('btn-wa').setAttribute('aria-expanded', String(open));
+}
+
 $('btn-exit').onclick = neutral;
+$('btn-wa').onclick = () => toggleWhatsApp();
 $('btn-menu').onclick = () => send({ action: 'menu', label: 'Menu' });
 // ---------- Micro : on touche, on parle, on touche Envoyer ----------
 // 1) Si le serveur sait transcrire : le site enregistre la voix et l'envoie au serveur (marche dans tous les navigateurs).
