@@ -23,7 +23,12 @@ Porté par [Talismeas Technologies](https://talismeas.tech) — candidature UNIC
 | Commande « effacer » | ✔ | ✔ |
 | Statistiques publiques agrégées (seuil 10) | `/api/stats` | — |
 | API relais (alertes) | `/api/admin/alerts` | — |
-| Notes vocales | dictée navigateur (FR) | à faire |
+| Message vocal compris (FR) : on touche le micro, on parle, on envoie | ✔ (transcription serveur, sinon dictée du navigateur) | ✔ (transcription serveur) |
+| Choix dit par son numéro (« deux », « le 3 ») et boutons numérotés | ✔ | ✔ (choix dit) |
+| Réponse lue à voix haute quand elle a parlé, choix compris | ✔ (voix du téléphone) | à faire (audios enregistrés) |
+| « Pas compris » guidé, puis proposition d'une personne | ✔ | ✔ |
+| Vocal en wolof | à faire | à faire |
+| Passer sur WhatsApp : bouton « WhatsApp », QR code et lien direct | ✔ | — |
 
 ## Démarrer
 
@@ -32,10 +37,18 @@ npm install
 cp .env.example .env      # puis compléter
 node --env-file=.env src/server.js
 # → http://localhost:3000
-npm test                  # 15 tests
+npm test                  # 25 tests
 ```
 
 Sans identifiants WhatsApp, les messages sortants s'affichent dans la console (mode démo).
+
+## Vocal (français)
+
+Pour les utilisatrices qui ne lisent ou n'écrivent pas : elles parlent, le bot répond. L'écrit ne change pas.
+
+- **Comprendre** : le vocal (micro du site ou note vocale WhatsApp) est transcrit par une API compatible OpenAI (`STT_URL`, `STT_API_KEY`, `STT_MODEL` ; Groq `whisper-large-v3` ou OpenAI `whisper-1`). Le texte passe au moteur comme un message « dit à voix haute » : un numéro dit vaut le bouton correspondant, une question cherche la fiche, le danger et le mot de code restent prioritaires. Sans clé, le site se rabat sur la dictée du navigateur (Chrome et Edge seulement) et WhatsApp répond que les vocaux ne sont pas encore compris.
+- **Répondre** : sur le site, si elle a parlé, la réponse est lue automatiquement par la voix du téléphone, avec les choix numérotés (« J'accepte : dites un »). Sur WhatsApp, il faudra les audios enregistrés par les traducteurs.
+- **Confidentialité** : l'audio reste en mémoire ; ni le son ni le texte transcrit ne sont écrits sur disque ou dans les journaux. Le service de transcription reçoit le son : à mentionner dans la politique de confidentialité.
 
 ## Mettre en ligne sur le serveur
 
@@ -58,7 +71,8 @@ Le script ne touche pas aux autres sites du serveur, garde les 5 dernières vers
 3. Exposer le serveur en HTTPS (VPS ou `ngrok http 3000` en test).
 4. Webhook : URL `https://<domaine>/webhook/whatsapp`, jeton de vérification = `WHATSAPP_VERIFY_TOKEN`, s'abonner au champ **messages**.
 5. Renseigner `WHATSAPP_APP_SECRET` pour vérifier la signature des requêtes.
-6. Pour le rappel J+3 : créer un modèle de message neutre avec deux boutons de réponse rapide dont les *payloads* sont `followup:yes` et `followup:no`, puis `WHATSAPP_FOLLOWUP_TEMPLATE=<nom>`.
+6. Publier l'app Meta (mode Live) avant d'ouvrir le service : en développement, Meta prévient que les messages des utilisatrices peuvent ne pas être transmis. La publication demande une URL de politique de confidentialité.
+7. Pour le rappel J+3 : créer un modèle de message neutre avec deux boutons de réponse rapide dont les *payloads* sont `followup:yes` et `followup:no`, puis `WHATSAPP_FOLLOWUP_TEMPLATE=<nom>`.
 
 ## Structure
 
@@ -66,8 +80,9 @@ Le script ne touche pas aux autres sites du serveur, garde les 5 dernières vers
 src/
   server.js            routes web, webhook WhatsApp, API relais, stats, planificateur
   config.js            variables d'environnement
+  speech.js            transcription des messages vocaux (API compatible OpenAI)
   store.js             stockage (JSON en démo → PostgreSQL en V1), hachage, chiffrement
-  engine/engine.js     moteur conversationnel unique (machine à états)
+  engine/engine.js     moteur conversationnel unique (machine à états, choix dits par numéro)
   engine/knowledge.js  recherche dans les fiches, détection de danger, IA optionnelle
   engine/i18n.js       textes FR / WO
   channels/whatsapp.js adaptateur WhatsApp Cloud API

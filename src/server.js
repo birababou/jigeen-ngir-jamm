@@ -3,8 +3,10 @@ import express from 'express';
 import path from 'node:path';
 import { config } from './config.js';
 import { handle, setRelayNotifier, followupMessage } from './engine/engine.js';
-import { alerts, followups, sessions, stats, decrypt, hashUser } from './store.js';
+import { alerts, followups, sessions, stats, decrypt, hashUser, maskPhones } from './store.js';
 import * as wa from './channels/whatsapp.js';
+import { speechEnabled, transcribe } from './speech.js';
+import { t } from './engine/i18n.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -31,19 +33,36 @@ app.use(express.json({ limit: '100kb', verify: (req, _res, buf) => (req.rawBody 
 setRelayNotifier(async (alert, contact) => {
   const msg = `Nouvelle demande #${alert.id} (${alert.type}) — zone : ${alert.district} — langue : ${alert.lang}\nRappeler : ${contact}\nRépondre en restant neutre (ne pas citer le service si quelqu'un d'autre décroche).`;
   if (config.relay.whatsapp) await wa.sendReplies(config.relay.whatsapp, [{ text: msg }]);
-  else console.log('[relais:démo]', msg);
+  else console.log('[relais:démo]', maskPhones(msg));
 });
 
 // ---------- Chatbot web ----------
-app.post('/api/chat', rateLimit({ windowMs: 60000, max: 60 }), async (req, res) => {
-  const { userId, text, action } = req.body || {};
-  if (!userId || typeof userId !== 'string' || userId.length > 64) return res.status(400).json({ error: 'userId requis' });
+const validUserId = (id) => Boolean(id) && typeof id === 'string' && id.length <= 64;
+
+async function webTurn(userId, input) {
   const h = hashUser('web', userId);
   const s = sessions.get(h);
   const pending = s?.pending || [];
   if (pending.length) sessions.set(h, { ...s, pending: [] });
-  const result = await handle({ channel: 'web', userId, text: String(text || '').slice(0, 1000), action });
-  res.json({ ...result, lang: sessions.get(h)?.lang || 'fr', replies: [...pending, ...result.replies] });
+  const result = await handle({ channel: 'web', userId, ...input });
+  return { ...result, lang: sessions.get(h)?.lang || 'fr', replies: [...pending, ...result.replies] };
+}
+
+app.post('/api/chat', rateLimit({ windowMs: 60000, max: 60 }), async (req, res) => {
+  const { userId, text, action, spoken } = req.body || {};
+  if (!validUserId(userId)) return res.status(400).json({ error: 'userId requis' });
+  res.json(await webTurn(userId, { text: String(text || '').slice(0, 1000), action, spoken: spoken === true }));
+});
+
+// Message vocal enregistré par le site : transcrit par notre serveur (tous navigateurs), puis traité
+// comme un texte dit à voix haute. L'audio reste en mémoire et n'est jamais écrit ni journalisé.
+app.post('/api/voice', rateLimit({ windowMs: 60000, max: 15 }), express.raw({ type: 'audio/*', limit: '3mb' }), async (req, res) => {
+  const userId = req.get('x-user-id');
+  if (!validUserId(userId)) return res.status(400).json({ error: 'userId requis' });
+  const audio = Buffer.isBuffer(req.body) && req.body.length ? { data: req.body, mime: req.get('content-type') } : null;
+  const heard = audio ? await transcribe(audio, 'fr').catch(() => '') : '';
+  if (!heard) return res.json({ heard: '', replies: [{ text: t(sessions.get(hashUser('web', userId))?.lang || 'fr', 'voice_not_heard') }] });
+  res.json({ heard, ...(await webTurn(userId, { text: heard, spoken: true })) });
 });
 
 // ---------- Webhook WhatsApp ----------
@@ -58,7 +77,18 @@ app.post('/webhook/whatsapp', async (req, res) => {
   for (const m of wa.parseWebhook(req.body)) {
     try {
       await wa.markRead(m.messageId);
-      const result = await handle(m);
+      let input = m;
+      // Vocal : transcrit, puis traité comme un texte dit à voix haute (numéros, questions, danger…).
+      if (m.voice && wa.voiceEnabled()) {
+        const heard = await wa.voiceToText(m.mediaId);
+        if (!heard) {
+          const lang = sessions.get(hashUser('whatsapp', m.userId))?.lang || 'fr';
+          await wa.sendReplies(m.userId, [{ text: t(lang, 'voice_not_heard') }]);
+          continue;
+        }
+        input = { ...m, voice: false, text: heard, spoken: true };
+      }
+      const result = await handle(input);
       await wa.sendReplies(m.userId, result.replies);
     } catch (e) {
       console.error('[whatsapp] traitement', e);
@@ -101,7 +131,7 @@ app.get('/api/stats', (_req, res) => {
   res.json({ seuil_de_publication: config.statsThreshold, mois: byMonth });
 });
 
-app.get('/health', (_req, res) => res.json({ ok: true, whatsapp: wa.whatsappEnabled(), llm: Boolean(config.llm.apiKey) }));
+app.get('/health', (_req, res) => res.json({ ok: true, whatsapp: wa.whatsappEnabled(), voice: speechEnabled(), llm: Boolean(config.llm.apiKey) }));
 
 // Fichiers statiques : images en cache 7 jours ; HTML/JS/CSS revalidés (le service worker gère le hors-ligne).
 app.use(

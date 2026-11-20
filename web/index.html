@@ -50,10 +50,19 @@
     <header class="bar">
       <span class="brand">Jigéen Ngir Jàmm</span>
       <span class="actions">
+        <button id="btn-wa" class="chip" type="button" aria-expanded="false" aria-controls="wa">WhatsApp</button>
         <button id="btn-menu" class="chip" type="button">Menu</button>
         <button id="btn-exit" class="chip exit" type="button" title="Sortie rapide">✕</button>
       </span>
     </header>
+    <!-- Le même assistant sur WhatsApp. Si le numéro change : mettre à jour le lien et régénérer whatsapp-qr.svg. -->
+    <section id="wa" class="wa" hidden aria-label="Continuer sur WhatsApp">
+      <img src="/whatsapp-qr.svg" alt="QR code pour écrire à Jàmm sur WhatsApp" width="232" height="232" />
+      <div>
+        <p><strong>Continuer sur WhatsApp</strong><br />Scannez le code avec un autre téléphone, ou touchez le bouton.</p>
+        <a class="wa-open" href="https://wa.me/221781104338?text=Bonjour" target="_blank" rel="noopener noreferrer">Ouvrir WhatsApp</a>
+      </div>
+    </section>
     <div id="log" class="log" aria-live="polite"></div>
     <form id="composer" class="composer" autocomplete="off">
       <input id="input" type="text" placeholder="Écrivez votre question…" maxlength="1000" />

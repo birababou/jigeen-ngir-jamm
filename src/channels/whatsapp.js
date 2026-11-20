@@ -2,6 +2,8 @@
 // Sans identifiants configurés, les messages sont affichés dans la console (mode démo hors ligne).
 import crypto from 'node:crypto';
 import { config } from '../config.js';
+import { hashUser, maskPhones } from '../store.js';
+import { speechEnabled, transcribe } from '../speech.js';
 
 const wa = config.whatsapp;
 export const whatsappEnabled = () => Boolean(wa.token && wa.phoneNumberId);
@@ -65,7 +67,7 @@ export function toWhatsApp(to, reply) {
 
 async function post(payload) {
   if (!whatsappEnabled()) {
-    console.log('[whatsapp:démo]', JSON.stringify(payload));
+    console.log('[whatsapp:démo]', maskPhones(JSON.stringify({ ...payload, ...(payload.to && { to: hashUser('whatsapp', payload.to) }) })));
     return;
   }
   const res = await fetch(`https://graph.facebook.com/${wa.graphVersion}/${wa.phoneNumberId}/messages`, {
@@ -73,7 +75,7 @@ async function post(payload) {
     headers: { Authorization: `Bearer ${wa.token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  if (!res.ok) console.error('[whatsapp] erreur', res.status, await res.text());
+  if (!res.ok) console.error('[whatsapp] erreur', res.status, maskPhones(await res.text()));
 }
 
 export async function sendReplies(to, replies) {
@@ -83,6 +85,30 @@ export async function sendReplies(to, replies) {
 // Message hors fenêtre de 24 h : nécessite un modèle approuvé par Meta (texte neutre).
 export async function sendTemplate(to, name, lang = 'fr') {
   await post({ messaging_product: 'whatsapp', to, type: 'template', template: { name, language: { code: lang === 'wo' ? 'fr' : lang } } });
+}
+
+// Message vocal : Meta donne d'abord l'adresse temporaire du fichier, puis le fichier lui-même (jeton requis).
+async function downloadMedia(mediaId) {
+  const auth = { Authorization: `Bearer ${wa.token}` };
+  const info = await fetch(`https://graph.facebook.com/${wa.graphVersion}/${mediaId}`, { headers: auth });
+  if (!info.ok) throw new Error(`média ${info.status}`);
+  const { url, mime_type } = await info.json();
+  const file = await fetch(url, { headers: auth });
+  if (!file.ok) throw new Error(`média ${file.status}`);
+  return { data: Buffer.from(await file.arrayBuffer()), mime: mime_type };
+}
+
+export const voiceEnabled = () => whatsappEnabled() && speechEnabled();
+
+// Texte du message vocal (l'audio reste en mémoire), ou '' si la transcription échoue.
+export async function voiceToText(mediaId) {
+  if (!voiceEnabled() || !mediaId) return '';
+  try {
+    return await transcribe(await downloadMedia(mediaId), 'fr');
+  } catch (e) {
+    console.error('[whatsapp] vocal', e.message);
+    return '';
+  }
 }
 
 export async function markRead(messageId) {

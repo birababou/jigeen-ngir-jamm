@@ -4,6 +4,12 @@
 export const LANGS = ['fr', 'wo'];
 export const LANG_LABELS = { fr: 'Français', wo: 'Wolof', ff: 'Pulaar' };
 
+// Numéros dits dans les choix lus à voix haute (« J'accepte : dites un. »). Les boutons portent les mêmes chiffres.
+export const NUMBERS = {
+  fr: ['un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix'],
+  wo: ['benn', 'ñaar', 'ñett', 'ñeent', 'juróom', 'juróom benn', 'juróom ñaar', 'juróom ñett', 'juróom ñeent', 'fukk']
+};
+
 const T = {
   fr: {
     welcome:
@@ -58,6 +64,11 @@ const T = {
     code_word_hint: 'Mot de code : dites-le pour passer à un écran neutre.',
     erased: 'Vos données ont été effacées. Pensez aussi à supprimer cette discussion de votre téléphone.',
     voice_unsupported: 'Je ne comprends pas encore les messages vocaux. Pouvez-vous écrire votre question ?',
+    say_choice: '{label} : dites {n}.',
+    voice_not_heard: 'Je n’ai pas bien entendu votre message vocal. Réessayez, ou touchez un bouton.',
+    not_understood: "Je n'ai pas bien compris. Dites seulement un numéro, ou touchez un bouton.",
+    not_understood_again: 'Je peux vous mettre en relation avec une personne formée.',
+    earphones_hint: 'Si quelqu’un est près de vous, écoutez avec des écouteurs.',
     back_menu: 'Menu',
     neutral: 'Recette du jour : thiéboudienne. Ingrédients : riz, poisson, légumes, tomate.',
     help:
