@@ -1,6 +1,6 @@
 // Service worker minimal : met en cache l'interface pour le faible débit. Les conversations ne sont jamais mises en cache.
 // Changer CACHE à chaque modification de web/ pour forcer la mise à jour chez les utilisatrices.
-const CACHE = 'jnj-v6';
+const CACHE = 'jnj-v7';
 const ASSETS = ['/', '/styles.css', '/app.js', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png'];
 self.addEventListener('install', (e) => {
   self.skipWaiting();

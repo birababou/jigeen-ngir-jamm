@@ -32,6 +32,11 @@ export const config = {
   relay: {
     whatsapp: env.RELAY_WHATSAPP || ''
   },
+  stt: {
+    url: env.STT_URL || 'https://api.openai.com/v1/audio/transcriptions',
+    apiKey: env.STT_API_KEY || '',
+    model: env.STT_MODEL || 'whisper-1'
+  },
   llm: {
     apiKey: env.ANTHROPIC_API_KEY || '',
     model: env.LLM_MODEL || 'claude-haiku-5-5'

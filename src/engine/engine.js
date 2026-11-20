@@ -1,9 +1,9 @@
 // Moteur conversationnel unique, partagé par le chatbot web et WhatsApp.
-// Entrée : { channel, userId, text?, action?, voice? }
-// Sortie : { replies: [{ text, options?: [{id,label}], card?: {title, items} }], ui?: { neutral?, clear? } }
+// Entrée : { channel, userId, text?, action?, voice?, spoken? } (spoken : texte dicté au micro)
+// Sortie : { replies: [{ text, speech, options?: [{id,label}], card?: {title, items} }], ui?: { neutral?, clear?, speak? } }
 // Les canaux ne font que traduire ces réponses dans leur format (boutons web, boutons/listes WhatsApp).
-import { t, LANG_LABELS } from './i18n.js';
-import { norm, answer, detectDanger, structuresFor, annuaire, fiches, audioFor } from './knowledge.js';
+import { t, LANG_LABELS, NUMBERS } from './i18n.js';
+import { norm, answer, search, detectDanger, structuresFor, annuaire, fiches, audioFor } from './knowledge.js';
 import { sessions, alerts, followups, stats, hashUser, encrypt } from '../store.js';
 import { config } from '../config.js';
 
@@ -22,6 +22,59 @@ const COMMANDS = {
   hello: ['bonjour', 'salut', 'salaam', 'salam', 'asalaa maalekum', 'hello', 'start']
 };
 const isCmd = (n, k) => COMMANDS[k].includes(n);
+const isAnyCmd = (n) => Object.keys(COMMANDS).some((k) => isCmd(n, k));
+
+// Choix dit à voix haute : « deux », « le 2 », « numéro trois », « la deuxième »… → index du choix, ou -1.
+// Dans une longue phrase, un « un » isolé n'est pas un choix (« j'ai un problème »).
+const CHOICE_WORDS = [
+  // « hein » et « de » : ce que la dictée du téléphone entend souvent pour « un » et « deux » dits seuls.
+  ['1', 'un', 'une', 'premier', 'premiere', 'hein'],
+  ['2', 'deux', 'deuxieme', 'second', 'seconde', 'de'],
+  ['3', 'trois', 'troisieme'],
+  ['4', 'quatre', 'quatrieme'],
+  ['5', 'cinq', 'cinquieme'],
+  ['6', 'six', 'sixieme'],
+  ['7', 'sept', 'septieme'],
+  ['8', 'huit', 'huitieme'],
+  ['9', 'neuf', 'neuvieme'],
+  ['10', 'dix', 'dixieme']
+];
+function spokenChoice(n) {
+  const words = n.split(' ').filter(Boolean);
+  const after = n.match(/\b(?:numero|choix|dites|le|la)\s+(\S+)/);
+  const candidates = after ? [after[1]] : words.length <= 2 ? words : [words[0]];
+  for (const w of candidates) {
+    const i = CHOICE_WORDS.findIndex((ws) => ws.includes(w));
+    if (i >= 0) return i;
+  }
+  return -1;
+}
+
+// Texte lu à voix haute : le message, les lieux proposés, puis « J'accepte : dites un. »
+export function spokenText(reply, lang) {
+  const nums = NUMBERS[lang] || NUMBERS.fr;
+  const parts = [reply.text.replace(/\n*\([^)]*\)\s*$/, '')];
+  for (const i of reply.card?.items || []) parts.push(`${i.name.replace(/\s*\(exemple\)/, '')}.`);
+  (reply.options || []).forEach((o, k) => parts.push(t(lang, 'say_choice').replace('{label}', o.label).replace('{n}', nums[k] || k + 1)));
+  return parts.join('\n');
+}
+
+// Le moteur garde les derniers choix proposés (pour comprendre « deux » dit au micro)
+// et ajoute à chaque réponse le texte à lire. ui.speak : elle a parlé, le site lit la réponse tout seul.
+export async function handle(input) {
+  const r = await turn(input);
+  const h = hashUser(input.channel, input.userId);
+  const s = sessions.get(h) || preConsent.get(h);
+  if (s && !r.ui?.neutral && !r.ui?.clear) {
+    const last = [...r.replies].reverse().find((x) => x.options?.length);
+    s.lastOptions = last ? last.options : [];
+    if (s.consent) sessions.set(h, s);
+    else preConsent.set(h, s);
+  }
+  const lang = s?.lang || 'fr';
+  const replies = r.replies.map((x) => (x.text ? { ...x, speech: spokenText(x, lang) } : x));
+  return { ...r, replies, ...(input.spoken && !r.ui?.neutral && { ui: { ...r.ui, speak: true } }) };
+}
 
 const opt = (lang, id, key) => ({ id, label: t(lang, key) });
 
@@ -47,7 +100,7 @@ const ficheReply = (lang, id) => {
   return (f.texte[lang] || f.texte.fr) + draft;
 };
 
-export async function handle({ channel, userId, text = '', action = null, voice = false }) {
+async function turn({ channel, userId, text = '', action = null, voice = false, spoken = false }) {
   const h = hashUser(channel, userId);
   let s = sessions.get(h) || preConsent.get(h) || { state: 'new', lang: 'fr', channel };
   const lang = () => s.lang;
@@ -61,6 +114,23 @@ export async function handle({ channel, userId, text = '', action = null, voice 
   if (n && n === config.codeWord) return { replies: [{ text: t(lang(), 'neutral') }], ui: { neutral: true, clear: true } };
 
   if (voice) return { replies: [{ text: t(lang(), 'voice_unsupported') }] };
+
+  // Texte dicté au micro : un numéro dit vaut le bouton correspondant. Sinon, s'il ne s'agit ni d'une question,
+  // ni d'un danger, ni d'une commande, on la guide : « dites un numéro », puis on propose une personne.
+  if (action) s.misses = 0;
+  else if (spoken && n) {
+    const choices = s.lastOptions || [];
+    const k = spokenChoice(n);
+    if (k >= 0 && k < choices.length) {
+      action = choices[k].id;
+      s.misses = 0;
+    } else if (choices.length && !['sante', 'callback'].includes(s.state) && !detectDanger(text) && !isAnyCmd(n) && !search(text).length) {
+      s.misses = (s.misses || 0) + 1;
+      persist();
+      if (s.misses === 1) return { replies: [{ text: t(lang(), 'not_understood'), options: choices }] };
+      return { replies: [{ text: t(lang(), 'not_understood_again'), options: [opt(lang(), 'human', 'talk_human'), opt(lang(), 'menu', 'back_menu')] }] };
+    }
+  }
 
   // 2. Consentement préalable. Les numéros d'urgence restent donnés même sans consentement.
   if (!s.consent) {
@@ -115,6 +185,8 @@ export async function handle({ channel, userId, text = '', action = null, voice 
           out.push({ text: t(lang(), 'bienetre_intro'), options: [opt(lang(), 'bien:exercise', 'exercise'), opt(lang(), 'human', 'talk_human')] });
         } else if (arg === 'securite') {
           s.state = 'securite';
+          // Elle a parlé : la réponse sera lue à voix haute, d'abord le conseil des écouteurs.
+          if (spoken) out.push({ text: t(lang(), 'earphones_hint') });
           out.push(securiteMenu(lang()), { text: t(lang(), 'code_word_hint') });
         }
         break;
