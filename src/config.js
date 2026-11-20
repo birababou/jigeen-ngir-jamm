@@ -12,6 +12,8 @@ if (!env.HASH_SECRET || !env.ENCRYPTION_KEY) {
 export const config = {
   root,
   port: Number(env.PORT || 3000),
+  // Interface d'écoute : 127.0.0.1 par défaut (le serveur web public fait le relais). 0.0.0.0 = toutes les interfaces.
+  host: env.HOST || '127.0.0.1',
   dataDir: env.DATA_DIR || path.join(root, 'var'),
   hashSecret: env.HASH_SECRET || 'demo-hash-secret-a-changer',
   encryptionKey: env.ENCRYPTION_KEY || 'demo-encryption-key-a-changer',
