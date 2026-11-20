@@ -169,6 +169,6 @@ async function tick() {
 setInterval(() => tick().catch((e) => console.error('[planificateur]', e)), 30000);
 
 if (process.env.NODE_ENV !== 'test')
-  app.listen(config.port, () => console.log(`Jigéen Ngir Jàmm — http://localhost:${config.port} (WhatsApp ${wa.whatsappEnabled() ? 'actif' : 'en mode démo'})`));
+  app.listen(config.port, config.host, () => console.log(`Jigéen Ngir Jàmm — http://${config.host}:${config.port} (WhatsApp ${wa.whatsappEnabled() ? 'actif' : 'en mode démo'})`));
 
 export default app;
